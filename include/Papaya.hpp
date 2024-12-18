@@ -206,7 +206,7 @@ class Papaya
          *
          * @warning This function will remove the papaya
         */
-        void destroy();
+        void destroy() const;
 
         /**
          * @brief Remove a specific data from the papaya
