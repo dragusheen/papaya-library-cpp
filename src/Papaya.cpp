@@ -7,31 +7,29 @@
 
 #include "Papaya.hpp"
 
-Papaya::Papaya(std::string path, std::string name, std::vector<std::string> keys)
+Papaya::Papaya(const std::string &path, const std::string &name, const std::vector<std::string> &keys)
+    : _path(path), _name(name), _keys(keys), _datas({})
 {
-    _path = path;
-    _name = name;
-    _keys = keys;
-    _datas.clear();
 }
 
-Papaya::Papaya(std::string path, std::string name)
+Papaya::Papaya(const std::string &path, const std::string &name)
+    : _path(path), _name(name)
 {
-    _path = path;
-    _name = name;
-
-    std::string papayaPath = _buildPath();
+    auto papayaPath = _buildPath();
     std::ifstream file(papayaPath);
+
     if (!file.is_open())
-        throw PapayaError("The papaya you are trying to open does not exist", "Papaya constructor");
+        throw PapayaError("The papaya file does not exist", "Papaya Constructor");
+
     std::string line;
     std::vector<std::string> lines;
+
     while (std::getline(file, line))
         lines.push_back(line);
+
     file.close();
     _loadPapaya(lines);
 }
-
 
 bool Papaya::hasData(const std::string &refKey, const std::string &refValue, const std::string &key) const
 {
@@ -138,16 +136,16 @@ void Papaya::clear()
     _datas.clear();
 }
 
-void Papaya::destroy()
+void Papaya::destroy() const
 {
-    _datas.clear();
-    _keys.clear();
-    std::string path = _buildPath();
-    std::ifstream file(path);
-    if (file.is_open()) {
-        file.clear();
-        file.close();
-        std::remove(path.c_str());
+    auto papayaPath = _buildPath();
+    if (!std::filesystem::exists(papayaPath))
+        throw PapayaError("File does not exist", "Papaya::destroy");
+    try {
+        if (!std::filesystem::remove(papayaPath))
+            throw PapayaError("Failed to delete file", "Papaya::destroy");
+    } catch (const std::filesystem::filesystem_error &e) {
+        throw PapayaError(e.what(), "Papaya::destroy");
     }
 }
 
@@ -213,29 +211,27 @@ void Papaya::updateLine(const std::string &refKey, const std::string &refValue, 
 
 void Papaya::save() const
 {
-    std::string path = _buildPath();
-    std::ifstream file(path);
-    if (file.is_open()) file.clear();
-    file.close();
-    std::ofstream ofs(path);
-    if (!ofs.is_open())
-        throw PapayaError("Error while saving the papaya", "Papay::save");
-    for (std::size_t i = 0; i < _keys.size(); i++) {
-        ofs << _keys[i];
-        if (i + 1 < _keys.size())
-            ofs << ";";
+    auto papayaPath = _buildPath();
+    std::ofstream file(papayaPath, std::ios::out | std::ios::trunc);
+    if (!file.is_open())
+        throw PapayaError("Failed to open file for saving", "Papaya::save");
+    for (size_t i = 0; i < _keys.size(); ++i) {
+        file << _keys[i];
+        if (i < _keys.size() - 1) file << ",";
     }
-    ofs << std::endl;
+    file << "\n";
     for (const auto &data : _datas) {
-        for (std::size_t i = 0; i < _keys.size(); i++) {
-            ofs << data.at(_keys[i]);
-            if (i + 1 < _keys.size())
-                ofs << ";";
+        for (size_t i = 0; i < _keys.size(); ++i) {
+            const auto &key = _keys[i];
+            auto it = data.find(key);
+            if (it != data.end()) file << it->second;
+            if (i < _keys.size() - 1) file << ",";
         }
-        ofs << std::endl;
+        file << "\n";
     }
-    ofs.close();
+    file.close();
 }
+
 
 void Papaya::view() const
 {

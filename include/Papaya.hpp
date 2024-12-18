@@ -8,14 +8,15 @@
 #ifndef PAPAYA_H_
     #define PAPAYA_H_
 
+#include <algorithm>
+#include <exception>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
-#include <fstream>
 #include <unordered_map>
-#include <exception>
-#include <algorithm>
+#include <vector>
 
 /**
  * @brief Papaya class
@@ -81,7 +82,7 @@ class Papaya
          *
          * @warning This constructor is used to create a new papaya
         */
-        Papaya(std::string path, std::string name, std::vector<std::string> keys);
+        Papaya(const std::string &path, const std::string &name, const std::vector<std::string> &keys);
 
         /**
          * @brief Construct a Papaya object
@@ -91,7 +92,7 @@ class Papaya
          *
          * @warning This constructor is used to open an existing papaya
         */
-        Papaya(std::string path, std::string name);
+        Papaya(const std::string &path, const std::string &name);
         ~Papaya() = default;
 
         /**
@@ -205,7 +206,7 @@ class Papaya
          *
          * @warning This function will remove the papaya
         */
-        void destroy();
+        void destroy() const;
 
         /**
          * @brief Remove a specific data from the papaya
@@ -272,7 +273,7 @@ class Papaya
         /**
          * @brief The path to the papaya file
         */
-        std::string _path;
+        std::filesystem::path _path;
 
         /**
          * @brief The name of the papaya file
@@ -294,7 +295,7 @@ class Papaya
          *
          * @return `std::string` The complete path to the papaya file
         */
-        std::string _buildPath() const;
+        std::filesystem::path _buildPath() const;
 
         /**
          * @brief Load the papaya file
