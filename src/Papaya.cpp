@@ -211,29 +211,27 @@ void Papaya::updateLine(const std::string &refKey, const std::string &refValue, 
 
 void Papaya::save() const
 {
-    std::string path = _buildPath();
-    std::ifstream file(path);
-    if (file.is_open()) file.clear();
-    file.close();
-    std::ofstream ofs(path);
-    if (!ofs.is_open())
-        throw PapayaError("Error while saving the papaya", "Papay::save");
-    for (std::size_t i = 0; i < _keys.size(); i++) {
-        ofs << _keys[i];
-        if (i + 1 < _keys.size())
-            ofs << ";";
+    auto papayaPath = _buildPath();
+    std::ofstream file(papayaPath);
+    if (!file.is_open())
+        throw PapayaError("Failed to open file for saving", "Papaya::save");
+    for (size_t i = 0; i < _keys.size(); ++i) {
+        file << _keys[i];
+        if (i < _keys.size() - 1) file << ",";
     }
-    ofs << std::endl;
+    file << "\n";
     for (const auto &data : _datas) {
-        for (std::size_t i = 0; i < _keys.size(); i++) {
-            ofs << data.at(_keys[i]);
-            if (i + 1 < _keys.size())
-                ofs << ";";
+        for (size_t i = 0; i < _keys.size(); ++i) {
+            const auto &key = _keys[i];
+            auto it = data.find(key);
+            if (it != data.end()) file << it->second;
+            if (i < _keys.size() - 1) file << ",";
         }
-        ofs << std::endl;
+        file << "\n";
     }
-    ofs.close();
+    file.close();
 }
+
 
 void Papaya::view() const
 {
