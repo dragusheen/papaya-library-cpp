@@ -136,16 +136,16 @@ void Papaya::clear()
     _datas.clear();
 }
 
-void Papaya::destroy()
+void Papaya::destroy() const
 {
-    _datas.clear();
-    _keys.clear();
-    std::string path = _buildPath();
-    std::ifstream file(path);
-    if (file.is_open()) {
-        file.clear();
-        file.close();
-        std::remove(path.c_str());
+    auto papayaPath = _buildPath();
+    if (!std::filesystem::exists(papayaPath))
+        throw PapayaError("File does not exist", "Papaya::destroy");
+    try {
+        if (!std::filesystem::remove(papayaPath))
+            throw PapayaError("Failed to delete file", "Papaya::destroy");
+    } catch (const std::filesystem::filesystem_error &e) {
+        throw PapayaError(e.what(), "Papaya::destroy");
     }
 }
 
