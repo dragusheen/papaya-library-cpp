@@ -7,31 +7,29 @@
 
 #include "Papaya.hpp"
 
-Papaya::Papaya(std::string path, std::string name, std::vector<std::string> keys)
+Papaya::Papaya(const std::string &path, const std::string &name, const std::vector<std::string> &keys)
+    : _path(path), _name(name), _keys(keys), _datas({})
 {
-    _path = path;
-    _name = name;
-    _keys = keys;
-    _datas.clear();
 }
 
-Papaya::Papaya(std::string path, std::string name)
+Papaya::Papaya(const std::string &path, const std::string &name)
+    : _path(path), _name(name)
 {
-    _path = path;
-    _name = name;
-
-    std::string papayaPath = _buildPath();
+    auto papayaPath = _buildPath();
     std::ifstream file(papayaPath);
+
     if (!file.is_open())
-        throw PapayaError("The papaya you are trying to open does not exist", "Papaya constructor");
+        throw PapayaError("The papaya file does not exist", "Papaya Constructor");
+
     std::string line;
     std::vector<std::string> lines;
+
     while (std::getline(file, line))
         lines.push_back(line);
+
     file.close();
     _loadPapaya(lines);
 }
-
 
 bool Papaya::hasData(const std::string &refKey, const std::string &refValue, const std::string &key) const
 {
