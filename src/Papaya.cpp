@@ -212,7 +212,7 @@ void Papaya::updateLine(const std::string &refKey, const std::string &refValue, 
 void Papaya::save() const
 {
     auto papayaPath = _buildPath();
-    std::ofstream file(papayaPath);
+    std::ofstream file(papayaPath, std::ios::out | std::ios::trunc);
     if (!file.is_open())
         throw PapayaError("Failed to open file for saving", "Papaya::save");
     for (size_t i = 0; i < _keys.size(); ++i) {
