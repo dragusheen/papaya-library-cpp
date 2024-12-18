@@ -3,3 +3,5 @@
 *.a
 test
 *.papaya
+build/*
+papaya

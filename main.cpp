@@ -13,13 +13,15 @@ int main(void)
     Papaya papaya("data/", "people", keys);
     papaya.addLine({"Jane", "22", "designer"});
     papaya.view();
-    papaya.save();
     papaya.removeData("name", "John", "name");
     std::cout << std::endl;
     std::cout << std::endl;
     papaya.view();
-    papaya.save();
-    papaya.updateLine("name", "Jane", {"Jane", "23", "designer"});
+    papaya.updateLine("name", "Jane", {"Jane", "23", "Designer"});
+    std::cout << std::endl;
+    std::cout << std::endl;
+    papaya.view();
+    papaya.addLine({"Pedro", "42", "Developper"});
     std::cout << std::endl;
     std::cout << std::endl;
     papaya.view();
