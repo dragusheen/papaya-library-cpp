@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <exception>
 #include <algorithm>
+#include <filesystem>
 
 /**
  * @brief Papaya class

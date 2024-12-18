@@ -13,7 +13,7 @@ std::string Papaya::_buildPath() const
         return _path + "/" + _name + ".papaya";
     if (_path.back() == '/' && _name.front() == '/')
         return _path + _name.substr(1) + ".papaya";
-    return _path + _name + ".papaya";
+    return (std::filesystem::path(_path) / _name).string() + ".papaya";
 }
 
 void Papaya::_loadPapaya(const std::vector<std::string> &lines)
